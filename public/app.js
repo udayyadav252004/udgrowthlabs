@@ -4,6 +4,7 @@ const ratingInput = document.querySelector('#rating');
 const startedAtInput = document.querySelector('#startedAt');
 const formStatus = document.querySelector('#form-status');
 const reviewList = document.querySelector('#review-list');
+const reviewToggle = document.querySelector('#review-toggle');
 const averageRating = document.querySelector('#average-rating');
 const averageRatingStars = document.querySelector('#average-rating-stars');
 const totalReviews = document.querySelector('#total-reviews');
@@ -26,6 +27,8 @@ const PLAN_WHATSAPP_MESSAGES = {
 };
 
 let currentWhatsAppNumber = DEFAULT_WHATSAPP_NUMBER;
+let reviewState = [];
+let showAll = false;
 
 const dateFormatter = new Intl.DateTimeFormat('en-IN', {
   day: '2-digit',
@@ -263,25 +266,77 @@ function createReviewCard(review) {
   return article;
 }
 
-function renderReviewSummary(summary) {
-  averageRating.textContent = Number(summary.averageRating || 0).toFixed(1);
-  averageRatingStars.textContent = formatStarString(summary.averageRating || 0);
-  averageRatingStars.setAttribute('aria-label', `Average rating is ${Number(summary.averageRating || 0).toFixed(1)} out of 5`);
-  totalReviews.textContent = String(summary.totalReviews || 0);
-  storageMode.textContent = summary.storageMode === 'mongo' ? 'MongoDB' : 'Local JSON';
+function calculateAverage(reviews) {
+  if (!Array.isArray(reviews) || reviews.length === 0) {
+    return 0;
+  }
 
-  reviewList.innerHTML = '';
+  const total = reviews.reduce((sum, review) => sum + Number(review.rating || 0), 0);
+  return Number((total / reviews.length).toFixed(1));
+}
 
-  if (!summary.reviews || summary.reviews.length === 0) {
-    const emptyState = document.createElement('p');
-    emptyState.textContent = 'No reviews yet. Be the first to share your experience.';
-    reviewList.appendChild(emptyState);
+function renderReviewMeta(storageModeValue) {
+  if (!averageRating || !averageRatingStars || !totalReviews || !storageMode) {
     return;
   }
 
-  summary.reviews.forEach((review) => {
-    reviewList.appendChild(createReviewCard(review));
+  const average = calculateAverage(reviewState);
+  const total = reviewState.length;
+
+  averageRating.textContent = average.toFixed(1);
+  averageRatingStars.textContent = formatStarString(average);
+  averageRatingStars.setAttribute('aria-label', `Average rating is ${average.toFixed(1)} out of 5`);
+  totalReviews.textContent = String(total);
+  storageMode.textContent = storageModeValue === 'mongo' ? 'MongoDB' : 'Local JSON';
+}
+
+function updateReviewToggle() {
+  if (!reviewToggle) {
+    return;
+  }
+
+  if (reviewState.length <= 2) {
+    showAll = false;
+    reviewToggle.hidden = true;
+    reviewToggle.setAttribute('aria-expanded', 'false');
+    return;
+  }
+
+  reviewToggle.hidden = false;
+  reviewToggle.textContent = showAll ? 'Show Less' : 'See More Reviews';
+  reviewToggle.setAttribute('aria-expanded', String(showAll));
+}
+
+function renderReviewList() {
+  if (!reviewList) {
+    return;
+  }
+
+  reviewList.innerHTML = '';
+
+  if (reviewState.length === 0) {
+    const emptyState = document.createElement('p');
+    emptyState.textContent = 'No reviews yet. Be the first to share your experience.';
+    reviewList.appendChild(emptyState);
+    updateReviewToggle();
+    return;
+  }
+
+  const visibleReviews = showAll ? reviewState : reviewState.slice(0, 2);
+  const fragment = document.createDocumentFragment();
+
+  visibleReviews.forEach((review) => {
+    fragment.appendChild(createReviewCard(review));
   });
+
+  reviewList.appendChild(fragment);
+  updateReviewToggle();
+}
+
+function renderReviewSummary(summary = {}) {
+  reviewState = Array.isArray(summary.reviews) ? [...summary.reviews] : [];
+  renderReviewMeta(summary.storageMode);
+  renderReviewList();
 }
 
 async function loadReviews() {
@@ -293,6 +348,7 @@ async function loadReviews() {
       throw new Error(payload.message || 'Could not load reviews.');
     }
 
+    showAll = false;
     renderReviewSummary(payload);
   } catch (error) {
     setFormStatus('Reviews are temporarily unavailable. Please refresh in a moment.', true);
@@ -412,6 +468,17 @@ async function handleReviewSubmit(event) {
   }
 }
 
+function setupReviewToggle() {
+  if (!reviewToggle) {
+    return;
+  }
+
+  reviewToggle.addEventListener('click', () => {
+    showAll = !showAll;
+    renderReviewList();
+  });
+}
+
 function setupReviewForm() {
   if (!reviewForm) {
     return;
@@ -450,6 +517,7 @@ function init() {
   setupHeaderState();
   setupRevealAnimations();
   setupStarPicker();
+  setupReviewToggle();
   setupReviewForm();
   setupHeroTilt();
   loadSiteConfig();
@@ -457,4 +525,10 @@ function init() {
 }
 
 init();
+
+
+
+
+
+
 
