@@ -1,23 +1,23 @@
 module.exports = [
   {
-    name: 'Anika Sharma',
-    business: 'Urban Petal Studio',
+    name: 'Deepanshu Maheshwari',
+    business: 'Kuku Coffee Shop',
     rating: 5,
-    reviewText: 'UD Growth Labs turned our scattered Instagram feed into a proper lead channel. We started getting WhatsApp enquiries from local bridal clients within the first ten days.',
+    reviewText: 'Our cafe started getting better local reach after the regular posts. A lot of customers now tell us they noticed us on Instagram before visiting.',
     createdAt: '2026-02-18T10:30:00.000Z'
   },
   {
-    name: 'Rahul Saini',
-    business: 'Saini Diagnostics',
+    name: 'Swaraj Solanki',
+    business: 'Dynamo Fitness Club',
     rating: 5,
-    reviewText: 'The content calendar was clear, fast, and surprisingly strategic. Their reels and design creatives helped us look far more credible than larger clinics in our area.',
+    reviewText: 'Our member engagement picked up once we started posting offers and workout reels regularly. A few local enquiries also came through Instagram and WhatsApp in the first weeks.',
     createdAt: '2026-02-28T08:15:00.000Z'
   },
   {
-    name: 'Megha Arora',
-    business: 'Glowlane Skin Bar',
+    name: 'Palak Sharma',
+    business: 'Shri Krishna Makeup Studio',
     rating: 4,
-    reviewText: 'We used the Basic plan first and upgraded within a month because the response was strong. The offer posters and caption strategy made posting simple for our team.',
+    reviewText: 'We started getting more bridal enquiry messages after posting their designs and reels consistently. The page looks cleaner now and clients say they found us on Instagram.',
     createdAt: '2026-03-09T14:05:00.000Z'
   }
 ];

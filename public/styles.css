@@ -903,8 +903,7 @@ ul {
 }
 
 .card-link::after {
-  content: '->';
-  color: var(--accent);
+  content: none;
 }
 
 .pricing-shell {
@@ -1672,5 +1671,6 @@ textarea {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
 
 
